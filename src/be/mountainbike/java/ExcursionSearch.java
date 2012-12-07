@@ -1,6 +1,9 @@
 package be.mountainbike.java;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
@@ -8,17 +11,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import be.mountainbike.java.interfaces.IExcursionDetails;
 import be.mountainbike.java.interfaces.IExcursionOverview;
 
 public class ExcursionSearch  {
-  private final static String BASE_URL = "http://www.mountainbike.be/";
+  private final static String BASE_URL = "http://www.mountainbike.be";
   private final static boolean DEBUG = false;
 
   public static ArrayList<IExcursionOverview> getExcursions() {
     ArrayList<IExcursionOverview> fExcursionOverviewList = new ArrayList<IExcursionOverview>();
     Document doc;
     try {
-      doc = Jsoup.connect(BASE_URL + "toertochten").get();
+      doc = Jsoup.connect(BASE_URL + "/toertochten").get();
       fExcursionOverviewList = getExcursionOverwiew(doc);
     } catch (IOException e) {
       e.printStackTrace();
@@ -31,13 +35,26 @@ public class ExcursionSearch  {
     ArrayList<IExcursionOverview> fExcursionOverviewList = new ArrayList<IExcursionOverview>();
     Document doc;
     try {
-      doc = Jsoup.connect(BASE_URL + "toertochten?date=" + year + "-W" + weekNr).get();
+      doc = Jsoup.connect(BASE_URL + "/toertochten?date=" + year + "-W" + weekNr).get();
       fExcursionOverviewList = getExcursionOverwiew(doc);
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     return fExcursionOverviewList;
+  }
+
+  public static IExcursionDetails getExcursionDetails(String detailsUrl) {
+    IExcursionDetails fExcursionDetails = new ExcursionDetails(detailsUrl);
+    Document doc;
+    try {
+      doc = Jsoup.connect(BASE_URL + detailsUrl).get();
+      fExcursionDetails = getExcursionDetails(doc, detailsUrl);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return fExcursionDetails;
   }
 
   private static ArrayList<IExcursionOverview> getExcursionOverwiew(Document doc) {
@@ -76,5 +93,32 @@ public class ExcursionSearch  {
       }
     }
     return excursionOverviewList;
+  }
+
+  private static IExcursionDetails getExcursionDetails(Document doc, String detailsUrl) {
+    ExcursionDetails excursionDetails = new ExcursionDetails(detailsUrl);
+    Element excursionsDetail = doc.getElementsByClass("excursion-detail").get(0);
+
+    Element startLocation = excursionsDetail.getElementsByClass("field-name-field-start-address").get(0);
+    excursionDetails.setStartLocation(startLocation.text());
+
+    Element organiser = excursionsDetail.getElementsByClass("field-name-field-organiser").get(0);
+    excursionDetails.setOrganization(organiser.text());
+
+    Element distance = excursionsDetail.getElementsByClass("distances").get(0);
+    excursionDetails.setDistance(distance.text());
+
+    Element startTime = excursionsDetail.getElementsByClass("starttime").get(0);
+    excursionDetails.setStartTime(startTime.text());
+
+    try {
+      DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+      Element date = excursionsDetail.getElementsByClass("date").get(0);
+      excursionDetails.setDate(df.parse(date.text()));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    return excursionDetails;
   }
 }
