@@ -110,6 +110,9 @@ public class ExcursionSearch  {
 
     Element startTime = excursionsDetail.getElementsByClass("starttime").get(0);
     excursionDetails.setStartTime(startTime.text());
+    
+    Element comment = excursionsDetail.getElementsByClass("comment").get(0);
+    excursionDetails.setComment(comment.text());
 
     try {
       DateFormat df = new SimpleDateFormat("dd/MM/yyyy");

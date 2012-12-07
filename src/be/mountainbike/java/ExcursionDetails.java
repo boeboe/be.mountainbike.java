@@ -11,6 +11,7 @@ public class ExcursionDetails implements IExcursionDetails {
   private Date fDate;
   private String fStartTime;
   private String fDistance;
+  private String fComment;
   
   public ExcursionDetails(String detailsUrl) {
     fDetailsUrl = detailsUrl;
@@ -41,6 +42,10 @@ public class ExcursionDetails implements IExcursionDetails {
     fDistance = distance;
   }
 
+  public void setComment(String comment) {
+    fComment = comment;
+  }
+
   @Override
   public String getOrganization() {
     return fOrganization;
@@ -62,10 +67,15 @@ public class ExcursionDetails implements IExcursionDetails {
   }
 
   @Override
+  public String getComment() {
+    return fComment;
+  }
+
+  @Override
   public String toString() {
     return "ExcursionDetails [fDetailsUrl=" + fDetailsUrl + ", fStartLocation="
         + fStartLocation + ", fOrganization=" + fOrganization + ", fDate="
         + fDate + ", fStartTime=" + fStartTime + ", fDistance=" + fDistance
-        + "]";
+        + ", fComment=" + fComment + "]";
   }
 }

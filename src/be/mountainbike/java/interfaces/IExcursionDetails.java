@@ -13,4 +13,6 @@ public interface IExcursionDetails {
   public String getStartTime();
   
   public String getDistance();
+  
+  public String getComment();
 }
